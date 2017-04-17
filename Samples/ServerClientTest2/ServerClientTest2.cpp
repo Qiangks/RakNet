@@ -243,11 +243,11 @@ int main(void)
 
 	if (mode==1 || mode==2)
 	{
-		printf("Enter remote IP: ");
+		printf("Enter remote IP: ");    // default remoteIPAddress = 127.0.0.1
 		Gets(remoteIP, sizeof(remoteIP));
 		if (remoteIP[0]==0)
 		{
-			strcpy(remoteIP, defaultRemoteIP);
+			strcpy(remoteIP, defaultRemoteIP);  // remoteIP: 127.0.0.1
 			printf("Using %s\n", defaultRemoteIP);
 		}
 	}

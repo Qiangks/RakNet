@@ -47,12 +47,14 @@ include(./CmakeIncludes/CmakeMacros.txt)
 FIXLINKOPTIONS()
 FIXCOMPILEOPTIONS()
 
-
 add_subdirectory(Lib)
-
 
 set(RAKNET_COMMON_LIBS RakNetLibStatic)
 
+# @fanbingqiang add: set the RAKNET_GENERATE_SAMPLES True to generate sample 
+option( RAKNET_GENERATE_SAMPLES "option to generate sample" TRUE)
 if( RAKNET_GENERATE_SAMPLES )
 	add_subdirectory(Samples)
 endif()
+
+add_subdirectory(tutorial)

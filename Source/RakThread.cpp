@@ -16,18 +16,12 @@
 
 using namespace RakNet;
 
-
-
-
 #if   defined(_WIN32)
 	#include "WindowsIncludes.h"
 	#include <stdio.h>
 	#if !defined(_WIN32_WCE)
 		#include <process.h>
 	#endif
-
-
-
 
 #else
 #include <pthread.h>
@@ -72,45 +66,7 @@ int RakThread::Create( void* start_address( void* ), void *arglist, int priority
 		CloseHandle( threadHandle );
 		return 0;
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 #else
 	pthread_t threadHandle;
 	// Create thread linux
@@ -118,11 +74,7 @@ int RakThread::Create( void* start_address( void* ), void *arglist, int priority
 	sched_param param;
 	param.sched_priority=priority;
 	pthread_attr_init( &attr );
-	pthread_attr_setschedparam(&attr, &param);
-
-
-
-
+	pthread_attr_setschedparam(&attr, &param); 
 
 	pthread_attr_setstacksize(&attr, MAX_ALLOCA_STACK_ALLOCATION*2);
 
@@ -131,48 +83,5 @@ int RakThread::Create( void* start_address( void* ), void *arglist, int priority
 	RakAssert(res==0 && "pthread_create in RakThread.cpp failed.")
 	return res;
 #endif
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+} 
 
