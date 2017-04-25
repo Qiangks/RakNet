@@ -8,11 +8,6 @@
  *
  */
 
-// \file
-//
-
-
-
 #define CAT_NEUTER_EXPORT /* Neuter dllimport for libcat */
 
 #include "RakNetDefines.h"
@@ -76,24 +71,9 @@ RAK_THREAD_DECLARATION(UDTConnect);
 #include <stdlib.h> // malloc
 #endif
 
-
-
 #if   defined(_WIN32)
 //
 #else
-/*
-#include <alloca.h> // Console 2
-#include <stdlib.h>
-extern bool _extern_Console2LoadModules(void);
-extern int _extern_Console2GetConnectionStatus(void);
-extern int _extern_Console2GetLobbyStatus(void);
-//extern bool Console2StartupFluff(unsigned int *);
-extern void Console2ShutdownFluff(void);
-//extern unsigned int Console2ActivateConnection(unsigned int, void *);
-//extern bool Console2BlockOnEstablished(void);
-extern void Console2GetIPAndPort(unsigned int, char *, unsigned short *, unsigned int );
-//extern void Console2DeactivateConnection(unsigned int, unsigned int);
-*/
 #endif
 
 
@@ -111,14 +91,6 @@ static const int mtuSizes[NUM_MTU_SIZES]={MAXIMUM_MTU_SIZE, 1200, 576};
 using namespace RakNet;
 
 static RakNetRandom rnr;
-
-/*
-struct RakPeerAndIndex
-{
-	RakNetSocket2 *s;
-	RakPeer *rakPeer;
-};
-*/
 
 static const unsigned int MAX_OFFLINE_DATA_LENGTH=400; // I set this because I limit ID_CONNECTION_REQUEST to 512 bytes, and the password is appended to that packet.
 
@@ -201,10 +173,6 @@ RakPeer::RakPeer()
 	endThreads = true;
 	isMainLoopThreadActive = false;
 	incomingDatagramEventHandler=0;
-
-
-
-
 
 	// isRecvfromThreadActive=false;
 #if defined(GET_TIME_SPIKE_LIMIT) && GET_TIME_SPIKE_LIMIT>0
@@ -795,14 +763,14 @@ ConnectionAttemptResult RakPeer::Connect( const char* host, unsigned short remot
 
 	// Not threadsafe but it's not important enough to lock.  Who is going to change the password a lot during runtime?
 	// It won't overflow at least because outgoingPasswordLength is an unsigned char
-//	if (passwordDataLength>0)
-//		memcpy(outgoingPassword, passwordData, passwordDataLength);
-//	outgoingPasswordLength=(unsigned char) passwordDataLength;
+    //	if (passwordDataLength>0)
+    //		memcpy(outgoingPassword, passwordData, passwordDataLength);
+    //	outgoingPasswordLength=(unsigned char) passwordDataLength;
 
-	// 04/02/09 - Can't remember why I disabled connecting to self, but it seems to work
-	// Connecting to ourselves in the same instance of the program?
-//	if ( ( strcmp( host, "127.0.0.1" ) == 0 || strcmp( host, "0.0.0.0" ) == 0 ) && remotePort == mySystemAddress[0].port )
-//		return false;
+    // 04/02/09 - Can't remember why I disabled connecting to self, but it seems to work
+    // Connecting to ourselves in the same instance of the program?
+    //	if ( ( strcmp( host, "127.0.0.1" ) == 0 || strcmp( host, "0.0.0.0" ) == 0 ) && remotePort == mySystemAddress[0].port )
+    //		return false;
 
 	return SendConnectionRequest( host, remotePort, passwordData, passwordDataLength, publicKey, connectionSocketIndex, 0, sendConnectionAttemptCount, timeBetweenSendConnectionAttemptsMS, timeoutTime);
 }
@@ -919,8 +887,8 @@ void RakPeer::Shutdown( unsigned int blockDuration, unsigned char orderingChanne
 
 #endif // RAKPEER_USER_THREADED!=1
 
-//	char c=0;
-//	unsigned int socketIndex;
+    //	char c=0;
+    //	unsigned int socketIndex;
 	// remoteSystemList in Single thread
 	for ( i = 0; i < systemListSize; i++ )
 	{
