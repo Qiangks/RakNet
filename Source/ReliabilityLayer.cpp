@@ -678,11 +678,6 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer(
 #endif
 
 	RakNet::BitStream socketData( (unsigned char*) buffer, length, false ); // Convert the incoming data to a bitstream for easy parsing
-	//	time = RakNet::GetTimeUS();
-
-	// Set to the current time if it is not zero, and we get incoming data
-	// 	if (timeResendQueueNonEmpty!=0)
-	// 		timeResendQueueNonEmpty=timeRead;
 
 	DatagramHeaderFormat dhf;
 	dhf.Deserialize(&socketData);
@@ -794,13 +789,6 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer(
 
 					RemoveFromDatagramHistory(datagramNumber);
 				}
-// 				else if (isReliable)
-// 				{
-// 					// Previously used slot, rather than empty unreliable slot
-// 					printf("%p Ack %i is duplicate\n", this, datagramNumber.val);
-// 
-//  					congestionManager.OnDuplicateAck(timeRead, datagramNumber);
-// 				}
 			}
 		}
 	}
@@ -906,7 +894,6 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer(
 			}
 
 			{
-
 				// resetReceivedPackets is set from a non-threadsafe function.
 				// We do the actual reset in this function so the data is not modified by multiple threads
 				if (resetReceivedPackets)
@@ -1046,176 +1033,6 @@ bool ReliabilityLayer::HandleSocketReceiveFromConnectedPlayer(
 				// If the allocated buffer is > DEFAULT_HAS_RECEIVED_PACKET_QUEUE_SIZE and it is 3x greater than the number of elements actually being used
 				if (hasReceivedPacketQueue.AllocationSize() > (unsigned int) DEFAULT_HAS_RECEIVED_PACKET_QUEUE_SIZE && hasReceivedPacketQueue.AllocationSize() > hasReceivedPacketQueue.Size() * 3)
 					hasReceivedPacketQueue.Compress(_FILE_AND_LINE_);
-
-
-				/*
-				if ( internalPacket->reliability == RELIABLE_SEQUENCED || internalPacket->reliability == UNRELIABLE_SEQUENCED )
-				{
-#ifdef _DEBUG
-					RakAssert( internalPacket->orderingChannel < NUMBER_OF_ORDERED_STREAMS );
-#endif
-
-					if ( internalPacket->orderingChannel >= NUMBER_OF_ORDERED_STREAMS )
-					{
-
-						FreeInternalPacketData(internalPacket, _FILE_AND_LINE_ );
-						ReleaseToInternalPacketPool( internalPacket );
-
-						for (unsigned int messageHandlerIndex=0; messageHandlerIndex < messageHandlerList.Size(); messageHandlerIndex++)
-							messageHandlerList[messageHandlerIndex]->OnReliabilityLayerNotification("internalPacket->orderingChannel >= NUMBER_OF_ORDERED_STREAMS", BYTES_TO_BITS(length), systemAddress);			
-
-						bpsMetrics[(int) USER_MESSAGE_BYTES_RECEIVED_IGNORED].Push1(timeRead,BITS_TO_BYTES(internalPacket->dataBitLength));
-
-						goto CONTINUE_SOCKET_DATA_PARSE_LOOP;
-					}
-
-					if ( IsOlderOrderedPacket( internalPacket->orderingIndex, waitingForSequencedPacketReadIndex[ internalPacket->orderingChannel ] ) == false )
-					{
-						// Is this a split packet?
-						if ( internalPacket->splitPacketCount > 0 )
-						{
-							// Generate the split
-							// Verify some parameters to make sure we don't get junk data
-
-
-							// Check for a rebuilt packet
-							InsertIntoSplitPacketList( internalPacket, timeRead );
-							bpsMetrics[(int) USER_MESSAGE_BYTES_RECEIVED_PROCESSED].Push1(timeRead,BITS_TO_BYTES(internalPacket->dataBitLength));
-
-							// Sequenced
-							internalPacket = BuildPacketFromSplitPacketList( internalPacket->splitPacketId, timeRead,
-								s, systemAddress, rnr, remotePortRakNetWasStartedOn_PS3, extraSocketOptions);
-
-							if ( internalPacket )
-							{
-								// Update our index to the newest packet
-								waitingForSequencedPacketReadIndex[ internalPacket->orderingChannel ] = internalPacket->orderingIndex + (OrderingIndexType)1;
-
-								// If there is a rebuilt packet, add it to the output queue
-								outputQueue.Push( internalPacket, _FILE_AND_LINE_  );
-								internalPacket = 0;
-							}
-
-							// else don't have all the parts yet
-						}
-						else
-						{
-							// Update our index to the newest packet
-							waitingForSequencedPacketReadIndex[ internalPacket->orderingChannel ] = internalPacket->orderingIndex + (OrderingIndexType)1;
-
-							// Not a split packet. Add the packet to the output queue
-							bpsMetrics[(int) USER_MESSAGE_BYTES_RECEIVED_PROCESSED].Push1(timeRead,BITS_TO_BYTES(internalPacket->dataBitLength));
-							outputQueue.Push( internalPacket, _FILE_AND_LINE_  );
-							internalPacket = 0;
-						}
-					}
-					else
-					{
-						// Older sequenced packet. Discard it
-						FreeInternalPacketData(internalPacket, _FILE_AND_LINE_ );
-						ReleaseToInternalPacketPool( internalPacket );
-
-						bpsMetrics[(int) USER_MESSAGE_BYTES_RECEIVED_IGNORED].Push1(timeRead,BITS_TO_BYTES(internalPacket->dataBitLength));
-
-					}
-
-					goto CONTINUE_SOCKET_DATA_PARSE_LOOP;
-					}
-
-				// Is this an unsequenced split packet?
-				if ( internalPacket->splitPacketCount > 0 )
-				{
-					// Check for a rebuilt packet
-					if ( internalPacket->reliability != RELIABLE_ORDERED )
-						internalPacket->orderingChannel = 255; // Use 255 to designate not sequenced and not ordered
-
-					InsertIntoSplitPacketList( internalPacket, timeRead );
-
-					internalPacket = BuildPacketFromSplitPacketList( internalPacket->splitPacketId, timeRead,
-						s, systemAddress, rnr, remotePortRakNetWasStartedOn_PS3, extraSocketOptions);
-
-					if ( internalPacket == 0 )
-					{
-
-						// Don't have all the parts yet
-						goto CONTINUE_SOCKET_DATA_PARSE_LOOP;
-					}
-				}
-				*/
-
-				/*
-				if ( internalPacket->reliability == RELIABLE_ORDERED )
-				{
-#ifdef _DEBUG
-					RakAssert( internalPacket->orderingChannel < NUMBER_OF_ORDERED_STREAMS );
-#endif
-
-					if ( internalPacket->orderingChannel >= NUMBER_OF_ORDERED_STREAMS )
-					{
-						// Invalid packet
-						FreeInternalPacketData(internalPacket, _FILE_AND_LINE_ );
-						ReleaseToInternalPacketPool( internalPacket );
-
-						bpsMetrics[(int) USER_MESSAGE_BYTES_RECEIVED_IGNORED].Push1(timeRead,BITS_TO_BYTES(internalPacket->dataBitLength));
-
-						goto CONTINUE_SOCKET_DATA_PARSE_LOOP;
-					}
-
-					bpsMetrics[(int) USER_MESSAGE_BYTES_RECEIVED_PROCESSED].Push1(timeRead,BITS_TO_BYTES(internalPacket->dataBitLength));
-
-					if ( waitingForOrderedPacketReadIndex[ internalPacket->orderingChannel ] == internalPacket->orderingIndex )
-					{
-						// Get the list to hold ordered packets for this stream
-						DataStructures::LinkedList<InternalPacket*> *orderingListAtOrderingStream;
-						unsigned char orderingChannelCopy = internalPacket->orderingChannel;
-
-						// Push the packet for the user to read
-						outputQueue.Push( internalPacket, _FILE_AND_LINE_  );
-						internalPacket = 0; // Don't reference this any longer since other threads access it
-
-						// Wait for the resendNext ordered packet in sequence
-						waitingForOrderedPacketReadIndex[ orderingChannelCopy ] ++; // This wraps
-
-						orderingListAtOrderingStream = GetOrderingListAtOrderingStream( orderingChannelCopy );
-
-						if ( orderingListAtOrderingStream != 0)
-						{
-							while ( orderingListAtOrderingStream->Size() > 0 )
-							{
-								// Cycle through the list until nothing is found
-								orderingListAtOrderingStream->Beginning();
-								indexFound=false;
-								size=orderingListAtOrderingStream->Size();
-								count=0;
-
-								while (count++ < size)
-								{
-									if ( orderingListAtOrderingStream->Peek()->orderingIndex == waitingForOrderedPacketReadIndex[ orderingChannelCopy ] )
-									{
-										outputQueue.Push( orderingListAtOrderingStream->Pop(), _FILE_AND_LINE_  );
-										waitingForOrderedPacketReadIndex[ orderingChannelCopy ]++;
-										indexFound=true;
-									}
-									else
-										(*orderingListAtOrderingStream)++;
-								}
-
-								if (indexFound==false)
-									break;
-							}
-						}
-						internalPacket = 0;
-					}
-					else
-					{
-						// This is a newer ordered packet than we are waiting for. Store it for future use
-						AddToOrderingList( internalPacket );
-					}
-
-
-					goto CONTINUE_SOCKET_DATA_PARSE_LOOP;
-				}
-				*/
 
 				// Is this a split packet? If so then reassemble
 				if ( internalPacket->splitPacketCount > 0 )
@@ -1494,7 +1311,6 @@ CONTINUE_SOCKET_DATA_PARSE_LOOP:
 		}
 
 	}
-
 
 	receivePacketCount++;
 
